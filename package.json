@@ -4,6 +4,9 @@
   "description": "Create or change .NET assembly attributes in C# and JScript source code",
   "license": "MIT",
   "author": "Vincent Weevers",
+  "files": [
+    "index.js"
+  ],
   "scripts": {
     "test": "tape test/*.js"
   },
