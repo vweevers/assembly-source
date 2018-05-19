@@ -5,7 +5,7 @@ const fs = require('fs')
 const path = require('path')
 const Assembly = require('../')
 
-test('read', function (t) {
+test('read cs', function (t) {
   const source = read(fixture('AssemblyInfo.cs'))
   const assembly = Assembly(source)
 
@@ -28,7 +28,7 @@ test('read', function (t) {
   t.end()
 })
 
-test('write', function (t) {
+test('modify cs', function (t) {
   const source = read(fixture('AssemblyInfo.cs'))
   const assembly = Assembly(source)
 
@@ -51,6 +51,29 @@ test('write', function (t) {
   t.end()
 })
 
+test('modify jscript', function (t) {
+  const source = read(fixture('AssemblyInfo.js'))
+  const assembly = Assembly(source, { language: 'jscript' })
+
+  assembly.set('AssemblyTitle', 'ModifiedTitle')
+  assembly.set('AssemblyCompany', 'ModifiedCompany')
+  assembly.set('AssemblyTrademark', 'ModifiedTrademark')
+
+  t.is(assembly.get('AssemblyTitle'), 'ModifiedTitle')
+  t.is(assembly.get('AssemblyCompany'), 'ModifiedCompany')
+  t.is(assembly.get('AssemblyTrademark'), 'ModifiedTrademark')
+
+  // Add new attributes
+  assembly.set('NewAttrA', true)
+  assembly.set('NewAttrB', 'beep')
+
+  t.is(assembly.get('NewAttrA'), true)
+  t.is(assembly.get('NewAttrB'), 'beep')
+
+  t.is(assembly.toSource().trim(), read(fixture('AssemblyInfo-modified.js')).trim())
+  t.end()
+})
+
 test('generate', function (t) {
   const assembly = Assembly()
 
@@ -58,6 +81,16 @@ test('generate', function (t) {
   assembly.set('ComVisible', true)
 
   t.is(assembly.toSource().trim(), read(fixture('AssemblyInfo-generated.cs')).trim())
+  t.end()
+})
+
+test('generate jscript', function (t) {
+  const assembly = Assembly({ language: 'jscript' })
+
+  assembly.set('AssemblyTitle', 'GeneratedProduct')
+  assembly.set('ComVisible', true)
+
+  t.is(assembly.toSource().trim(), read(fixture('AssemblyInfo-generated.js')).trim())
   t.end()
 })
 
