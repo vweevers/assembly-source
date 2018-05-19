@@ -1,6 +1,6 @@
 {
   "name": "assembly-source",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Create or change .NET assembly attributes in C# and JScript source code",
   "license": "MIT",
   "author": "Vincent Weevers",
