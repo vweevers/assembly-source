@@ -22,8 +22,7 @@
     "jscript"
   ],
   "engines": {
-    "node": ">=4.0.0",
-    "npm": ">=2.0.0"
+    "node": ">=6"
   },
   "repository": "vweevers/assembly-source",
   "bugs": "https://github.com/vweevers/assembly-source/issues",
