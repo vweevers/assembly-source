@@ -1,13 +1,17 @@
 {
   "name": "assembly-source",
   "version": "0.0.1",
-  "description": "Create or change assembly attributes in C# and JScript source code",
+  "description": "Create or change .NET assembly attributes in C# and JScript source code",
   "license": "MIT",
   "author": "Vincent Weevers",
   "scripts": {
     "test": "tape test/*.js"
   },
-  "dependencies": {},
+  "dependencies": {
+    "esprima": "~4.0.0",
+    "is-options": "~1.0.1",
+    "pascal-case": "~2.0.1"
+  },
   "devDependencies": {
     "tape": "~4.6.3"
   },

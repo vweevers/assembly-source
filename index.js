@@ -1,11 +1,16 @@
 'use strict'
 
-const ATTRIBUTE_RE = /\n[ \t]*\[\s*assembly\s*:\s*([a-zA-Z0-9]+)\s*\(([^\)]+)\)\s*\]/
-    , SINGLE_QUOTE = `'`
-    , DOUBLE_QUOTE = `"`
+const isOptions = require('is-options')
+const pascalCase = require('pascal-case')
+const esprima = require('esprima')
 
-module.exports = function (source) {
-  if (source == null) {
+const ATTRIBUTE_RE = /(^|\r?\n)\s*\[\s*assembly\s*:[^]+?\]/
+
+module.exports = function (source, opts) {
+  if (isOptions(source)) {
+    opts = source
+    source = ''
+  } else if (source == null) {
     source = ''
   } else if (Buffer.isBuffer(source)) {
     source = source.toString()
@@ -13,25 +18,28 @@ module.exports = function (source) {
     throw new TypeError('The source code, if provided, must be a string or buffer')
   }
 
+  if (!opts) opts = {}
+
   const attributes = {}
   const chunks = []
+  const language = opts.language
 
-  let remainder = source
-  let hasSuffixes = false
   let match
+  let remainder = source
+  let enableSuffix = language === 'jscript'
 
   while ((match = remainder.match(ATTRIBUTE_RE)) !== null) {
     const raw = match[0]
-    const key = match[1]
-    const args = match[2].trim()
-    const value = parseAttributeValue(args)
+    const expr = raw.trim()
 
-    // Keep whitespace at beginning of line
+    // Keep indentation
     const start = match.index + raw.indexOf('[')
     const end = match.index + raw.length
 
     chunks.push(remainder.slice(0, start))
-    chunks.push(raw.trim())
+    chunks.push(expr)
+
+    const { key, value } = parseAttribute(expr)
 
     remainder = remainder.slice(end)
     addAttribute(key, value, chunks.length - 1)
@@ -39,10 +47,10 @@ module.exports = function (source) {
 
   function addAttribute (fqk, value, index) {
     const isSuffixed = fqk.slice(-9) === 'Attribute'
-    const key = isSuffixed ? fqk.slice(0, -9) : fqk
+    const key = pascalCase(isSuffixed ? fqk.slice(0, -9) : fqk)
 
-    if (isSuffixed) hasSuffixes = true
-    else if (hasSuffixes) fqk = key + 'Attribute'
+    enableSuffix = enableSuffix || isSuffixed
+    fqk = enableSuffix ? key + 'Attribute' : key
 
     return (attributes[key] = {
       set (newValue) {
@@ -61,10 +69,13 @@ module.exports = function (source) {
 
   return {
     get (key) {
+      key = pascalCase(key)
       return attributes[key] ? attributes[key].value : null
     },
 
     set (key, value) {
+      key = pascalCase(key)
+
       if (attributes[key]) {
         attributes[key].set(value)
       } else {
@@ -77,8 +88,27 @@ module.exports = function (source) {
       }
     },
 
-    toSource () {
-      return chunks.join('')
+    attributes () {
+      const res = {}
+
+      for (let k in attributes) {
+        res[k] = attributes[k].value
+      }
+
+      return res
+    },
+
+    toSource (opts) {
+      if (!opts) opts = {}
+      let src = chunks.join('')
+
+      if (language === 'jscript' && opts.preamble !== false && src !== '') {
+        if (!/import\s+System\.Reflection/.test(src)) {
+          src = 'import System.Reflection;\n' + src
+        }
+      }
+
+      return src
     }
   }
 }
@@ -93,23 +123,22 @@ function literal (value) {
   }
 }
 
-function parseAttributeValue (source) {
-  if (source[0] === SINGLE_QUOTE) {
-    if (source[source.length - 1] !== SINGLE_QUOTE) {
-      throw new Error('Cannot parse: ' + source)
-    }
+function parseAttribute (src) {
+  const js = '{' + src.slice(1, -1) + '}'
+  const body = esprima.parseScript(js).body
+  const stmt = body[0].body[0].body || {}
+  const { type, callee, arguments: args } = stmt.expression || {}
 
-    // Naive parsing of JS string
-    const raw = source.slice(1, -1)
-    const escaped = raw.replace(/"/g, '\\"').replace(/\\'/g, SINGLE_QUOTE)
-
-    source = DOUBLE_QUOTE + escaped + DOUBLE_QUOTE
+  if (stmt.type !== 'ExpressionStatement' || type !== 'CallExpression') {
+    throw new Error('expected ExpressionStatement with CallExpression')
   }
 
-  try {
-    // Basic support of booleans, strings and numbers in C# and JS
-    return JSON.parse(source)
-  } catch (err) {
-    throw new Error('Cannot parse: ' + source)
+  if (callee.type !== 'Identifier' || args.length !== 1 || args[0].type !== 'Literal') {
+    throw new Error('expected Identifier callee and one Literal argument')
+  }
+
+  return {
+    key: callee.name,
+    value: args[0].value
   }
 }
