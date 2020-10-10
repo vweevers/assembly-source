@@ -26,16 +26,16 @@
   "standard": {
     "ignore": "test/fixtures/*.js"
   },
+  "repository": "vweevers/assembly-source",
+  "bugs": "https://github.com/vweevers/assembly-source/issues",
+  "homepage": "https://github.com/vweevers/assembly-source",
   "keywords": [
     "assembly",
-    "c-sharp",
+    "csharp",
     "dotnet",
     "jscript"
   ],
   "engines": {
     "node": ">=10"
-  },
-  "repository": "vweevers/assembly-source",
-  "bugs": "https://github.com/vweevers/assembly-source/issues",
-  "homepage": "https://github.com/vweevers/assembly-source"
+  }
 }
