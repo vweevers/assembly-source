@@ -91,7 +91,7 @@ module.exports = function (source, opts) {
     attributes () {
       const res = {}
 
-      for (let k in attributes) {
+      for (const k in attributes) {
         res[k] = attributes[k].value
       }
 

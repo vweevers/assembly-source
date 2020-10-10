@@ -8,7 +8,9 @@
     "index.js"
   ],
   "scripts": {
-    "test": "node test"
+    "test": "standard && hallmark && depcheck && node test",
+    "fix:js": "standard --fix",
+    "fix:md": "hallmark --fix"
   },
   "dependencies": {
     "esprima": "^4.0.0",
@@ -16,7 +18,13 @@
     "pascal-case": "^3.1.1"
   },
   "devDependencies": {
+    "depcheck": "^1.2.0",
+    "hallmark": "^3.0.0",
+    "standard": "^14.3.4",
     "tape": "^5.0.1"
+  },
+  "standard": {
+    "ignore": "test/fixtures/*.js"
   },
   "keywords": [
     "assembly",
