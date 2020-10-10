@@ -1,7 +1,7 @@
 'use strict'
 
 const isOptions = require('is-options')
-const pascalCase = require('pascal-case')
+const { pascalCase } = require('pascal-case')
 const esprima = require('esprima')
 
 const ATTRIBUTE_RE = /(^|\r?\n)\s*\[\s*assembly\s*:[^]+?\]/
