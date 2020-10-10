@@ -13,6 +13,7 @@ using System.Runtime.InteropServices;
 [
     assembly: AssemblyCulture(""
 )]
+[assembly: SuppressIldasm]
 
 // Boolean
 [assembly: ComVisible(false)]

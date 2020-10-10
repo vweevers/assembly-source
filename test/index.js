@@ -17,6 +17,7 @@ test('read cs', function (t) {
   t.is(assembly.get('AssemblyCopyright'), 'Copyright © TestCompany 2017')
   t.is(assembly.get('AssemblyTrademark'), '')
   t.is(assembly.get('AssemblyCulture'), '')
+  t.is(assembly.get('SuppressIldasm'), null)
 
   t.is(assembly.get('ComVisible'), false)
   t.is(assembly.get('AssemblyVersion'), '1.0.0')

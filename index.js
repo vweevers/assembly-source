@@ -127,7 +127,12 @@ function parseAttribute (src) {
   const js = '{' + src.slice(1, -1) + '}'
   const body = esprima.parseScript(js).body
   const stmt = body[0].body[0].body || {}
-  const { type, callee, arguments: args } = stmt.expression || {}
+  const { type, callee, arguments: args, name } = stmt.expression || {}
+
+  // E.g. [assembly: SuppressIldasm]
+  if (stmt.type === 'ExpressionStatement' && type === 'Identifier') {
+    return { key: name, value: null }
+  }
 
   if (stmt.type !== 'ExpressionStatement' || type !== 'CallExpression') {
     throw new Error('expected ExpressionStatement with CallExpression')
