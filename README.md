@@ -4,7 +4,7 @@
 
 [![npm status](http://img.shields.io/npm/v/assembly-source.svg)](https://www.npmjs.org/package/assembly-source)
 [![node](https://img.shields.io/node/v/assembly-source.svg)](https://www.npmjs.org/package/assembly-source)
-[![Travis build status](https://img.shields.io/travis/vweevers/assembly-source.svg)](http://travis-ci.org/vweevers/assembly-source)
+[![Travis build status](https://img.shields.io/travis/com/vweevers/assembly-source.svg)](http://travis-ci.com/vweevers/assembly-source)
 
 ## Usage
 
