@@ -25,7 +25,7 @@
     "jscript"
   ],
   "engines": {
-    "node": ">=6"
+    "node": ">=10"
   },
   "repository": "vweevers/assembly-source",
   "bugs": "https://github.com/vweevers/assembly-source/issues",
